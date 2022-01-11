@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using WebApplication1.Models;
 
@@ -32,13 +33,13 @@ namespace WebApplication1.Controllers.api
         }
 
         // GET: api/Client/5
-        public IHttpActionResult Get(int id)
+        public async Task<IHttpActionResult> Get(int id)
         {
             try
             {
 
 
-                Client client = clientDB.Clients.Find(id);
+                Client client = await clientDB.Clients.FindAsync(id);
 
                 return Ok(client);
             }
@@ -54,18 +55,26 @@ namespace WebApplication1.Controllers.api
         }
 
         // POST: api/Client
-        public IHttpActionResult Post([FromBody] Client client)
+        public async Task<IHttpActionResult> Post([FromBody] Client client)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
                 clientDB.Clients.Add(client);
-                clientDB.SaveChanges();
+                await clientDB.SaveChangesAsync();
                 return Ok("Add");
-                   catch (SqlException ex)
-            {
-                return BadRequest(ex.Message);
 
             }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -73,19 +82,19 @@ namespace WebApplication1.Controllers.api
         }
 
         // PUT: api/Client/5
-        public IHttpActionResult Put(int id, [FromBody] Client client)
+        public async Task<IHttpActionResult> Put(int id, [FromBody] Client client)
         {
             try
             {
 
-                Client ClientThatMatchId = clientDB.Clients.Find(id);
+                Client ClientThatMatchId = await clientDB.Clients.FindAsync(id);
                 if (client != null)
                 {
                     ClientThatMatchId.ClientName =  client.ClientName;
                     ClientThatMatchId.ClientNameLast =client.ClientNameLast;
 
                 }
-                clientDB.SaveChanges();
+                await clientDB.SaveChangesAsync();
                 return Ok("Update");
             }
             catch (SqlException ex)
@@ -100,12 +109,13 @@ namespace WebApplication1.Controllers.api
         }
 
         // DELETE: api/Client/5
-        public IHttpActionResult Delete(int id)
+        public async Task <IHttpActionResult> Delete(int id)
         {
             try
             {
-                Client client = clientDB.Clients.Find(id);
+                Client client = await clientDB.Clients.FindAsync(id);
                 clientDB.Clients.Remove(client);
+                await clientDB.SaveChangesAsync();
                 return Ok("Delete");
             }
             catch (SqlException ex)
@@ -120,3 +130,4 @@ namespace WebApplication1.Controllers.api
         }
     }
 }
+
