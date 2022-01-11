@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -14,46 +15,108 @@ namespace WebApplication1.Controllers.api
         // GET: api/Client
         public IHttpActionResult Get()
         {
-            List<Client> clients = clientDB.Clients.ToList();
-            return Ok(clients);
+            try
+            {
+                List<Client> clients = clientDB.Clients.ToList();
+                return Ok(clients);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET: api/Client/5
         public IHttpActionResult Get(int id)
         {
-            Client client = clientDB.Clients.Find(id);
+            try
+            {
 
-            return Ok(client); ;
+
+                Client client = clientDB.Clients.Find(id);
+
+                return Ok(client);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // POST: api/Client
         public IHttpActionResult Post([FromBody] Client client)
         {
-            clientDB.Clients.Add(client);
-            clientDB.SaveChanges();
-            return Ok("Add");
+            try
+            {
+                clientDB.Clients.Add(client);
+                clientDB.SaveChanges();
+                return Ok("Add");
+                   catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // PUT: api/Client/5
         public IHttpActionResult Put(int id, [FromBody] Client client)
         {
-            Client ClientThatMatchId = clientDB.Clients.Find(id);
-            if (client != null)
+            try
             {
-                ClientThatMatchId.ClientName =  client.ClientName;
-                ClientThatMatchId.ClientNameLast =client.ClientNameLast;
+
+                Client ClientThatMatchId = clientDB.Clients.Find(id);
+                if (client != null)
+                {
+                    ClientThatMatchId.ClientName =  client.ClientName;
+                    ClientThatMatchId.ClientNameLast =client.ClientNameLast;
+
+                }
+                clientDB.SaveChanges();
+                return Ok("Update");
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
 
             }
-            clientDB.SaveChanges();
-            return Ok("Update");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/Client/5
         public IHttpActionResult Delete(int id)
         {
-            Client client = clientDB.Clients.Find(id);
-            clientDB.Clients.Remove(client);
-            return Ok("Delete");
+            try
+            {
+                Client client = clientDB.Clients.Find(id);
+                clientDB.Clients.Remove(client);
+                return Ok("Delete");
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
